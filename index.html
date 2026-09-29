@@ -55,7 +55,6 @@
       border: 1px solid rgba(51, 65, 85, 0.8);
     }
 
-    /* Floating background emojis animation */
     .bg-emoji {
       position: fixed;
       user-select: none;
@@ -85,7 +84,6 @@
       </a>
 
       <div class="flex items-center gap-3">
-        <!-- Dark Mode Toggle Button -->
         <button id="themeToggle" onclick="toggleDarkMode()" class="p-2.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
           <i id="themeIcon" class="fas fa-moon text-lg"></i>
         </button>
@@ -124,7 +122,7 @@
       <div class="glass-card p-5 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-left">
         <div>
           <h3 class="font-bold text-slate-800 dark:text-slate-200">Have a Quiz Code?</h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Enter a 6-character code to take a friend's quiz</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Enter a 6-character code to take or view a quiz</p>
         </div>
         <div class="flex w-full sm:w-auto gap-2">
           <input type="text" id="joinCodeInput" placeholder="8FJ29K" uppercase class="w-full sm:w-28 px-3 py-2 text-center font-mono font-bold tracking-wider rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 uppercase">
@@ -137,17 +135,14 @@
     <div id="categoryScreen" class="screen hidden space-y-6">
       <div class="text-center space-y-2">
         <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white">Choose a Quiz Theme</h2>
-        <p class="text-slate-600 dark:text-slate-400 text-sm">We'll select 10 random questions from your chosen category!</p>
+        <p class="text-slate-600 dark:text-slate-400 text-sm">We'll select 10 questions strictly from your chosen category!</p>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="categoryGrid">
-        <!-- Category cards will be injected by JavaScript -->
-      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="categoryGrid"></div>
     </div>
 
-    <!-- SCREEN 3: ANSWERING QUESTIONS (CREATOR OR FRIEND) -->
+    <!-- SCREEN 3: ANSWERING QUESTIONS -->
     <div id="questionScreen" class="screen hidden space-y-6">
-      <!-- Progress Bar & Indicator -->
       <div class="space-y-2">
         <div class="flex justify-between items-center text-sm font-semibold">
           <span id="questionStepText" class="text-sky-500">Question 1 of 10</span>
@@ -158,19 +153,13 @@
         </div>
       </div>
 
-      <!-- Question Card -->
       <div class="glass-card p-6 sm:p-8 rounded-3xl shadow-xl space-y-6">
-        <h3 id="questionText" class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white leading-snug">
-          What usually cheers me up when I'm having a rough day?
-        </h3>
-
-        <div id="optionsContainer" class="space-y-3">
-          <!-- Options injected via JavaScript -->
-        </div>
+        <h3 id="questionText" class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white leading-snug"></h3>
+        <div id="optionsContainer" class="space-y-3"></div>
       </div>
     </div>
 
-    <!-- SCREEN 4: FRIEND INTRO / PREDICTION SCREEN -->
+    <!-- SCREEN 4: FRIEND INTRO -->
     <div id="friendIntroScreen" class="screen hidden space-y-6 text-center">
       <div class="space-y-3">
         <span class="text-5xl">👋</span>
@@ -232,9 +221,7 @@
         <h2 id="friendScoreTitle" class="text-3xl font-extrabold text-slate-900 dark:text-white">You got 8/10!</h2>
         <p id="friendScoreSubtitle" class="text-slate-600 dark:text-slate-400 text-sm">You predicted 8/10 — spot on!</p>
 
-        <div class="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3 text-left" id="friendBreakdownContainer">
-          <!-- Breakdown list injected via JS -->
-        </div>
+        <div class="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3 text-left" id="friendBreakdownContainer"></div>
 
         <button onclick="showScreen('landingScreen')" class="w-full py-3.5 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-2xl transition mt-4">
           Create Your Own Quiz
@@ -242,11 +229,11 @@
       </div>
     </div>
 
-    <!-- SCREEN 7: CREATOR DASHBOARD / LEADERBOARD -->
+    <!-- SCREEN 7: CREATOR DASHBOARD WITH WRONG ANSWER DETAILS -->
     <div id="dashboardScreen" class="screen hidden space-y-6">
       <div class="flex justify-between items-center">
         <div>
-          <h2 id="dashboardTitle" class="text-2xl font-extrabold text-slate-900 dark:text-white">Maryam's Quiz Results</h2>
+          <h2 id="dashboardTitle" class="text-2xl font-extrabold text-slate-900 dark:text-white">Quiz Leaderboard</h2>
           <p id="dashboardSubtitle" class="text-xs text-slate-500 dark:text-slate-400">0 responses total</p>
         </div>
         <button onclick="copyQuizLink()" class="px-3.5 py-2 bg-sky-500 text-white rounded-xl text-xs font-bold hover:bg-sky-600 transition">
@@ -255,44 +242,36 @@
       </div>
 
       <div class="glass-card p-6 rounded-3xl shadow-xl space-y-4">
-        <h3 class="font-extrabold text-lg text-slate-900 dark:text-white flex items-center gap-2">
-          <span>🏆</span> Leaderboard
-        </h3>
-
-        <div id="leaderboardList" class="space-y-2">
-          <!-- Leaderboard rows injected via JS -->
+        <div class="flex items-center justify-between">
+          <h3 class="font-extrabold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+            <span>🏆</span> Leaderboard & Detailed Answers
+          </h3>
+          <span class="text-xs text-slate-400">Click a friend to see what they got wrong!</span>
         </div>
+
+        <div id="leaderboardList" class="space-y-3"></div>
       </div>
     </div>
 
   </main>
 
-  <!-- Footer -->
   <footer class="py-6 text-center text-xs text-slate-400 dark:text-slate-600 border-t border-slate-200 dark:border-slate-800/50">
     KnowMeBest © 2026 — Built for friendship testing
   </footer>
 
-  <!-- SCRIPT LOGIC -->
   <script>
-    // ----------------------------------------------------
-    // SUPABASE DATABASE CONFIGURATION
-    // ----------------------------------------------------
     const SUPABASE_URL = 'https://lvrfutgtjrkadowcwwvv.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2cmZ1dGd0anJrYWRvd2N3d3Z2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MDg3NzQsImV4cCI6MjEwNjI4NDc3NH0.9pYJPMMhl5aRGffSkMbtg2UQZflT0_J3Z3ME8DFF26o';
     
-    // Initialize Supabase Client
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // ----------------------------------------------------
-    // QUESTION BANK (100+ CATEGORIZED QUESTIONS)
-    // ----------------------------------------------------
     const CATEGORIES = [
-      { id: 'Moods', name: 'Moods', emoji: '😊', desc: 'Emotions, stress reactions, and what cheers you up.' },
-      { id: 'Fun', name: 'Fun', emoji: '😂', desc: 'Random choices, funny habits, and lighthearted picks.' },
+      { id: 'Moods', name: 'Moods', emoji: '😊', desc: 'Emotions, stress reactions, and cheer-ups.' },
+      { id: 'Fun', name: 'Fun', emoji: '😂', desc: 'Lighthearted picks and funny habits.' },
       { id: 'ThisOrThat', name: 'This or That', emoji: '⚖️', desc: 'Simple two-choice dilemmas.' },
-      { id: 'Deep', name: 'Deep', emoji: '🧠', desc: 'Values, relationships, and meaningful life questions.' },
-      { id: 'Hypotheticals', name: 'Hypotheticals', emoji: '🌎', desc: 'Crazy what-if scenarios and dream situations.' },
-      { id: 'Mix', name: 'Mix', emoji: '🎲', desc: 'Random questions from all categories combined!' }
+      { id: 'Deep', name: 'Deep', emoji: '🧠', desc: 'Values and meaningful life questions.' },
+      { id: 'Hypotheticals', name: 'Hypotheticals', emoji: '🌎', desc: 'Dream scenarios and what-ifs.' },
+      { id: 'Mix', name: 'Mix', emoji: '🎲', desc: 'Random questions from all themes!' }
     ];
 
     const QUESTION_BANK = [
@@ -304,6 +283,11 @@
       { id: 'm5', category: 'Moods', question: "When I get excited, how do I express it?", options: ["Talk super fast & loud", "Huge smile but calm", "Do a little happy dance", "Text everyone immediately"] },
       { id: 'm6', category: 'Moods', question: "What exhausts my social battery fastest?", options: ["Large crowds/parties", "Small talk with strangers", "Long group text chains", "Being outdoors too long"] },
       { id: 'm7', category: 'Moods', question: "What is my morning mood usually like?", options: ["Night owl, do not talk", "Ready to tackle the day", "Need 3 alarms first", "Calm and peaceful"] },
+      { id: 'm8', category: 'Moods', question: "What puts me in an instantly bad mood?", options: ["Rude people", "Bad traffic/delay", "Hunger (hangry!)", "Lack of sleep"] },
+      { id: 'm9', category: 'Moods', question: "How do I handle huge surprises?", options: ["Love them!", "Prefer advance warning", "Get overwhelmed", "Pretend to be calm"] },
+      { id: 'm10', category: 'Moods', question: "What calms me down best when angry?", options: ["Deep breathing / time", "A long walk", "Venting it all out", "Laughter / comedy"] },
+      { id: 'm11', category: 'Moods', question: "What makes me feel most accomplished?", options: ["Finishing a hard task", "Helping someone out", "Learning something new", "Reaching a goal"] },
+      { id: 'm12', category: 'Moods', question: "How do I act when I'm tired?", options: ["Giddy & laugh at everything", "Grumpy & quiet", "Slower & unfocused", "Power through non-stop"] },
 
       // FUN
       { id: 'f1', category: 'Fun', question: "What would I spend an unnecessary amount of money on?", options: ["Delicious gourmet food", "Cool tech & gadgets", "Fashion & clothes", "Travel & experiences"] },
@@ -311,46 +295,69 @@
       { id: 'f3', category: 'Fun', question: "What would I choose for a completely free Sunday?", options: ["Sleeping in & gaming/movies", "Going on an adventure/outing", "Trying a new coffee shop", "Hanging out with friends"] },
       { id: 'f4', category: 'Fun', question: "What kind of driver/passenger am I?", options: ["DJ controlling the music", "Navigator checking maps", "Snack holder & eater", "Co-pilot giving commentary"] },
       { id: 'f5', category: 'Fun', question: "If I was in a horror movie, what would happen to me?", options: ["The smart one who survives", "The first one to get caught", "The one who fought back", "The one who caused it"] },
+      { id: 'f6', category: 'Fun', question: "What is my guilty pleasure entertainment?", options: ["Reality TV shows", "Silly internet memes", "Binging drama series", "Watching late-night reviews"] },
+      { id: 'f7', category: 'Fun', question: "What super power would I choose just for fun?", options: ["Invisibility", "Teleportation", "Reading minds", "Time travel"] },
+      { id: 'f8', category: 'Fun', question: "What kind of eater am I?", options: ["Tries everything new", "Picky / sticks to favorites", "Snacker all day long", "Finishes meals in 2 minutes"] },
+      { id: 'f9', category: 'Fun', question: "What's my go-to karaoke style?", options: ["Belt out pop anthems", "Sing dramatic classics", "Cheer from the crowd", "Duet with a friend"] },
+      { id: 'f10', category: 'Fun', question: "What pet would I get if budget wasn't an issue?", options: ["Cute kitten / cat", "Loyal dog / puppy", "Exotic bird or reptile", "Miniature farm animal"] },
+      { id: 'f11', category: 'Fun', question: "What's my worst bad habit?", options: ["Procrastinating", "Checking phone constantly", "Impulse buying", "Staying up too late"] },
+      { id: 'f12', category: 'Fun', question: "If I opened a restaurant, what would it serve?", options: ["Desserts & pastries", "Spicy street food", "Cozy comfort food", "Artisanal coffee & snacks"] },
 
       // THIS OR THAT
-      { id: 't1', category: 'ThisOrThat', question: "Beach holiday or Mountain getaway?", options: ["Beach Holiday 🏖️", "Mountain Getaway 🏔️"] },
+      { id: 't1', category: 'ThisOrThat', question: "Beach holiday or Mountain getaway?", options: ["Beach Holiday 🏖️️", "Mountain Getaway 🏔️"] },
       { id: 't2', category: 'ThisOrThat', question: "Staying home or Going out on Friday night?", options: ["Staying Home 🏠", "Going Out 🎉"] },
       { id: 't3', category: 'ThisOrThat', question: "Sweet snacks or Salty snacks?", options: ["Sweet Snacks 🍫", "Salty Snacks 🍿"] },
       { id: 't4', category: 'ThisOrThat', question: "Early sunrise or Late sunset?", options: ["Early Sunrise 🌅", "Late Sunset 🌇"] },
       { id: 't5', category: 'ThisOrThat', question: "Texting or Voice Calling?", options: ["Texting 💬", "Voice Calling 📞"] },
       { id: 't6', category: 'ThisOrThat', question: "Coffee or Tea?", options: ["Coffee ☕", "Tea 🍵"] },
+      { id: 't7', category: 'ThisOrThat', question: "Books or Movies?", options: ["Books 📚", "Movies 🍿"] },
+      { id: 't8', category: 'ThisOrThat', question: "Dog person or Cat person?", options: ["Dog Person 🐶", "Cat Person 🐱"] },
+      { id: 't9', category: 'ThisOrThat', question: "Hot summer or Cold winter?", options: ["Hot Summer ☀️", "Cold Winter ❄️"] },
+      { id: 't10', category: 'ThisOrThat', question: "Planned itinerary or Spontaneous trip?", options: ["Planned Itinerary 📋", "Spontaneous Trip 🎒"] },
+      { id: 't11', category: 'ThisOrThat', question: "Cook at home or Order takeaway?", options: ["Cook at Home 🍳", "Order Takeaway 🛵"] },
+      { id: 't12', category: 'ThisOrThat', question: "Early bird or Night owl?", options: ["Early Bird 🌤️", "Night Owl 🌙"] },
 
       // DEEP
       { id: 'd1', category: 'Deep', question: "What quality do I value most in a close friend?", options: ["Unconditional loyalty", "Honesty & transparency", "Humor & fun vibes", "Deep understanding"] },
-      { id: 'd2', category: 'Deep', question: "What would hurt me more in a relationship?", options: ["Being misunderstoood", "Being ignored", "Being lied to", "Being taken for granted"] },
+      { id: 'd2', category: 'Deep', question: "What would hurt me more in a relationship?", options: ["Being misunderstood", "Being ignored", "Being lied to", "Being taken for granted"] },
       { id: 'd3', category: 'Deep', question: "How do I usually handle conflict?", options: ["Talk it out immediately", "Need time alone to cool off", "Try to keep the peace", "Write out my thoughts"] },
+      { id: 'd4', category: 'Deep', question: "What motivates me most in life?", options: ["Personal growth", "Helping loved ones", "Achieving success", "Peace & happiness"] },
+      { id: 'd5', category: 'Deep', question: "What is my biggest fear regarding the future?", options: ["Not reaching potential", "Losing touch with people", "Making wrong choices", "Financial instability"] },
+      { id: 'd6', category: 'Deep', question: "How do I define true success?", options: ["Inner peace & content", "Building a happy family", "Career accomplishment", "Freedom to travel/live"] },
+      { id: 'd7', category: 'Deep', question: "What is my style of decision making?", options: ["Analytical & logical", "Trusting my gut feeling", "Asking for advice first", "Overthinking both sides"] },
+      { id: 'd8', category: 'Deep', question: "What makes me feel truly loved?", options: ["Quality time together", "Thoughtful words & praise", "Helpful actions & favors", "Unexpected thoughtful gifts"] },
+      { id: 'd9', category: 'Deep', question: "How easy is it for me to forgive people?", options: ["Forgive very quickly", "Forgive but don't forget", "Takes a long time", "Depends on the mistake"] },
+      { id: 'd10', category: 'Deep', question: "What life lesson took me longest to learn?", options: ["Saying no without guilt", "Not worrying what others think", "Patience with timing", "Asking for help when needed"] },
+      { id: 'd11', category: 'Deep', question: "What kind of impact do I want to leave?", options: ["Making people laugh & happy", "Building meaningful things", "Inspiring others", "Being a reliable support"] },
+      { id: 'd12', category: 'Deep', question: "How do I prefer to process deep grief or sadness?", options: ["In complete privacy", "With one trusted person", "Through creative outlets", "Keeping busy with work"] },
 
       // HYPOTHETICALS
       { id: 'h1', category: 'Hypotheticals', question: "If I could instantly master one skill, what would it be?", options: ["Speaking every language", "Playing any musical instrument", "Coding/building anything", "Mastering a sport/art"] },
       { id: 'h2', category: 'Hypotheticals', question: "If I won $1 Million today, what is my first move?", options: ["Invest & save most of it", "Buy my dream home/car", "Travel the world", "Share with family & friends"] },
-      { id: 'h3', category: 'Hypotheticals', question: "If I could live anywhere for a year, where would I go?", options: ["Bustling Tokyo / Asia", "Cozy European town", "Tropical beach island", "Vibrant New York City"] }
+      { id: 'h3', category: 'Hypotheticals', question: "If I could live anywhere for a year, where would I go?", options: ["Bustling Tokyo / Asia", "Cozy European town", "Tropical beach island", "Vibrant New York City"] },
+      { id: 'h4', category: 'Hypotheticals', question: "If I could have dinner with any historic figure, who?", options: ["A visionary scientist/inventor", "A legendary artist/writer", "A great historical leader", "A famous philosopher"] },
+      { id: 'h5', category: 'Hypotheticals', question: "If I had a free year with zero obligations, I would...", options: ["Travel non-stop", "Learn 5 new skills", "Start a custom passion project", "Relax and live stress-free"] },
+      { id: 'h6', category: 'Hypotheticals', question: "If I could time-travel once, where would I go?", options: ["100 years into the future", "The ancient world", "My own childhood days", "The vibrant 1980s/90s"] },
+      { id: 'h7', category: 'Hypotheticals', question: "If I could trade lives with anyone for 24 hours...", options: ["A world leader", "A famous movie star", "An astronaut in space", "A billionaire tech CEO"] },
+      { id: 'h8', category: 'Hypotheticals', question: "If I was stranded on a desert island, I'd bring...", options: ["Unlimited books / music", "A full survival tool kit", "A satellite communicator", "A giant box of snacks"] },
+      { id: 'h9', category: 'Hypotheticals', question: "If I could cure one global problem instantly...", options: ["World hunger", "Climate change", "All major diseases", "War and conflict"] },
+      { id: 'h10', category: 'Hypotheticals', question: "If I could speak to animals, which would I talk to first?", options: ["My pet / domestic pets", "Wild forest animals", "Deep sea ocean creatures", "Birds flying above"] },
+      { id: 'h11', category: 'Hypotheticals', question: "If I could build my dream house, it must have...", options: ["A secret hidden room", "A giant swimming pool", "A cozy home cinema", "A huge rooftop garden"] },
+      { id: 'h12', category: 'Hypotheticals', question: "If my life was turned into a movie genre, it would be...", options: ["A feel-good comedy", "An adventurous thriller", "A cozy slice-of-life drama", "A fast-paced sci-fi"] }
     ];
 
-    // ----------------------------------------------------
-    // APP STATE
-    // ----------------------------------------------------
     let state = {
       creatorName: '',
       category: '',
       quizId: '',
       questions: [],
       creatorAnswers: {},
-      
-      // Friend session
       friendName: '',
       predictedScore: 8,
       friendAnswers: {},
       currentQuestionIndex: 0
     };
 
-    // ----------------------------------------------------
-    // INIT & ROUTING
-    // ----------------------------------------------------
     window.addEventListener('DOMContentLoaded', () => {
       initEmojiBg();
       renderCategories();
@@ -383,10 +390,10 @@
       document.getElementById('themeIcon').className = isDark ? 'fas fa-sun text-lg' : 'fas fa-moon text-lg';
     }
 
-    // Floating Emoji Background
     function initEmojiBg() {
       const emojis = ['✨', '🎈', '🎉', '🧠', '👀', '💖', '⭐', '🎲'];
       const container = document.getElementById('emojiBgContainer');
+      container.innerHTML = '';
       for (let i = 0; i < 12; i++) {
         const el = document.createElement('div');
         el.className = 'bg-emoji';
@@ -399,9 +406,6 @@
       }
     }
 
-    // ----------------------------------------------------
-    // CREATOR FLOW
-    // ----------------------------------------------------
     function renderCategories() {
       const grid = document.getElementById('categoryGrid');
       grid.innerHTML = CATEGORIES.map(c => `
@@ -424,10 +428,7 @@
       state.category = catId;
       state.quizId = Math.random().toString(36).substring(2, 8).toUpperCase();
       
-      // Select 10 random questions
-      let pool = catId === 'Mix' ? QUESTION_BANK : QUESTION_BANK.filter(q => q.category === catId);
-      if (pool.length < 10) pool = QUESTION_BANK; // fallback
-      
+      let pool = (catId === 'Mix') ? [...QUESTION_BANK] : QUESTION_BANK.filter(q => q.category === catId);
       state.questions = [...pool].sort(() => 0.5 - Math.random()).slice(0, 10);
       state.creatorAnswers = {};
       state.currentQuestionIndex = 0;
@@ -445,7 +446,7 @@
       
       document.getElementById('questionText').innerText = isCreator 
         ? q.question 
-        : q.question.replace('me', state.creatorName).replace('my', `${state.creatorName}'s`);
+        : q.question.replace(/\bme\b/gi, state.creatorName).replace(/\bmy\b/gi, `${state.creatorName}'s`);
 
       const container = document.getElementById('optionsContainer');
       container.innerHTML = q.options.map(opt => `
@@ -464,7 +465,6 @@
           state.currentQuestionIndex++;
           showQuestionScreen(true);
         } else {
-          // Save Creator Quiz to Supabase
           await saveQuizToSupabase();
           showShareScreen();
         }
@@ -474,15 +474,11 @@
           state.currentQuestionIndex++;
           showQuestionScreen(false);
         } else {
-          // Submit Friend Answers to Supabase
           await submitFriendResponse();
         }
       }
     }
 
-    // ----------------------------------------------------
-    // SUPABASE DATA ACTIONS
-    // ----------------------------------------------------
     async function saveQuizToSupabase() {
       const { error } = await supabaseClient
         .from('quizzes')
@@ -510,9 +506,6 @@
       alert('Quiz link copied to clipboard!');
     }
 
-    // ----------------------------------------------------
-    // FRIEND FLOW
-    // ----------------------------------------------------
     async function loadQuizForFriend(quizId) {
       state.quizId = quizId;
       
@@ -560,7 +553,6 @@
         if (state.friendAnswers[q.id] === state.creatorAnswers[q.id]) score++;
       });
 
-      // Insert response into Supabase
       const { error } = await supabaseClient
         .from('responses')
         .insert([{
@@ -601,21 +593,32 @@
       confetti({ particleCount: score * 10, spread: 60 });
     }
 
-    // ----------------------------------------------------
-    // CREATOR DASHBOARD
-    // ----------------------------------------------------
+    // CREATOR DASHBOARD: Fetch both quiz questions and responses
     async function loadCreatorDashboard(quizId) {
       state.quizId = quizId;
       showScreen('dashboardScreen');
 
-      // Fetch responses from Supabase
-      const { data, error } = await supabaseClient
+      // 1. Fetch Quiz Data
+      const { data: quizData } = await supabaseClient
+        .from('quizzes')
+        .select('*')
+        .eq('id', quizId)
+        .single();
+
+      if (quizData) {
+        state.questions = quizData.questions;
+        state.creatorAnswers = quizData.creator_answers;
+        state.creatorName = quizData.creator_name;
+      }
+
+      // 2. Fetch Friend Responses
+      const { data: responsesData } = await supabaseClient
         .from('responses')
         .select('*')
         .eq('quiz_id', quizId)
         .order('actual_score', { ascending: false });
 
-      const responses = data || [];
+      const responses = responsesData || [];
       document.getElementById('dashboardSubtitle').innerText = `${responses.length} friends took your quiz`;
 
       const leaderboard = document.getElementById('leaderboardList');
@@ -624,18 +627,62 @@
         return;
       }
 
-      leaderboard.innerHTML = responses.map((r, i) => `
-        <div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <span class="font-bold text-lg text-slate-400 w-6">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span>
-            <div>
-              <div class="font-bold text-slate-900 dark:text-white text-sm">${r.friend_name}</div>
-              <div class="text-xs text-slate-400">Predicted: ${r.predicted_score}/10</div>
+      // Render Each Friend with an Expandable Answer Breakdown
+      leaderboard.innerHTML = responses.map((r, i) => {
+        const friendAnswers = r.answers || {};
+
+        const answerDetailsHtml = state.questions.map((q, qIdx) => {
+          const friendChoice = friendAnswers[q.id] || "No answer";
+          const correctChoice = state.creatorAnswers[q.id];
+          const isCorrect = friendChoice === correctChoice;
+
+          return `
+            <div class="p-2.5 rounded-lg text-xs ${isCorrect ? 'bg-emerald-100/50 dark:bg-emerald-950/30' : 'bg-rose-100/50 dark:bg-rose-950/30'} space-y-0.5">
+              <div class="font-bold text-slate-800 dark:text-slate-200">${qIdx + 1}. ${q.question}</div>
+              <div class="${isCorrect ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'} font-semibold">
+                ${isCorrect ? '✅ Correct' : '❌ Wrong'} — They chose: "${friendChoice}"
+              </div>
+              ${!isCorrect ? `<div class="text-slate-500">Your answer was: "${correctChoice}"</div>` : ''}
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div class="rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden border border-slate-200 dark:border-slate-700">
+            <button onclick="toggleFriendDetails('${r.id || i}')" class="w-full p-4 flex items-center justify-between text-left hover:bg-slate-200/50 dark:hover:bg-slate-700/50 transition">
+              <div class="flex items-center gap-3">
+                <span class="font-bold text-lg text-slate-400 w-6">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span>
+                <div>
+                  <div class="font-bold text-slate-900 dark:text-white text-sm">${r.friend_name}</div>
+                  <div class="text-xs text-slate-400">Predicted: ${r.predicted_score}/10</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="font-extrabold text-sky-500 text-lg">${r.actual_score}/10</div>
+                <i id="chevron-${r.id || i}" class="fas fa-chevron-down text-slate-400 text-xs transition-transform duration-200"></i>
+              </div>
+            </button>
+
+            <div id="details-${r.id || i}" class="hidden p-4 bg-white dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700 space-y-2">
+              <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Answer Breakdown for ${r.friend_name}</div>
+              ${answerDetailsHtml}
             </div>
           </div>
-          <div class="font-extrabold text-sky-500 text-lg">${r.actual_score}/10</div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
+    }
+
+    function toggleFriendDetails(id) {
+      const detailsEl = document.getElementById(`details-${id}`);
+      const chevronEl = document.getElementById(`chevron-${id}`);
+      
+      if (detailsEl.classList.contains('hidden')) {
+        detailsEl.classList.remove('hidden');
+        chevronEl.classList.add('rotate-180');
+      } else {
+        detailsEl.classList.add('hidden');
+        chevronEl.classList.remove('rotate-180');
+      }
     }
 
     function openCreatorDashboard() {
