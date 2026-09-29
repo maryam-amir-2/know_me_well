@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Well Do Your Friends Know You? 👀</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f5ff',
+                            100: '#e0ebff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    },
+                    animation: {
+                        'float-slow': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-15px) rotate(5deg)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '0.6', transform: 'scale(1)' },
+                            '50%': { opacity: '1', transform: 'scale(1.05)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+        
+        .light body {
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 50%, #fae8ff 100%);
+            color: #0f172a;
+        }
+
+        .dark body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            color: #f8fafc;
+        }
+
+        .glass-card {
+            transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .light .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 40px -15px rgba(99, 102, 241, 0.12);
+        }
+
+        .dark .glass-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gradient-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .gradient-btn:hover {
+            opacity: 0.95;
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 12px 25px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        .gradient-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        /* Floating Emoji Canvas Container */
+        #floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            user-select: none;
+            animation: floatUp 8s linear infinite;
+            opacity: 0.25;
+        }
+
+        .dark .particle {
+            opacity: 0.35;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(105vh) rotate(0deg) scale(0.8);
+            }
+            50% {
+                transform: translateY(50vh) rotate(180deg) scale(1.1);
+            }
+            100% {
+                transform: translateY(-10vh) rotate(360deg) scale(0.8);
+            }
+        }
+    </style>
+</head>
+<body class="antialiased flex flex-col min-h-screen relative overflow-x-hidden selection:bg-indigo-500 selection:text-white">
+
+    <!-- Floating Emojis Background -->
+    <div id="floating-particles"></div>
+
+    <header class="w-full py-4 px-6 glass-card sticky top-0 z-40 border-b">
+        <div class="max-w-3xl mx-auto flex justify-between items-center relative z-10">
+            <button onclick="router.navigate('')" class="flex items-center gap-2.5 text-xl sm:text-2xl font-black tracking-tight group">
+                <span class="text-2xl sm:text-3xl transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">👀</span>
+                <span class="gradient-text">KnowMeBest</span>
+            </button>
+            <div id="nav-actions" class="flex items-center gap-2">
+                <!-- Dark Mode Toggle Button -->
+                <button id="theme-toggle-btn" onclick="toggleDarkMode()" 
+                        class="p-2.5 rounded-2xl bg-slate-200/60 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 hover:bg-slate-300/80 dark:hover:bg-slate-700 transition flex items-center justify-center w-10 h-10 shadow-sm"
+                        aria-label="Toggle Dark Mode">
+                    <i id="theme-toggle-icon" class="fa-solid fa-moon text-lg"></i>
+                </button>
+
+                <button onclick="router.navigate('join')" class="text-xs sm:text-sm font-bold px-3.5 py-2 rounded-2xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-key"></i> <span class="hidden sm:inline">Enter</span> Code
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main View Area -->
+    <main class="flex-grow max-w-2xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center relative z-10">
+        <div id="app-viewport">
+            <!-- Initial Loader -->
+            <div class="flex flex-col justify-center items-center py-20 space-y-4">
+                <div class="animate-spin rounded-full h-12 w-12 border-4 border-indigo-500 border-t-transparent"></div>
+                <p class="text-xs font-bold text-slate-400 animate-pulse">Loading Quiz Magic...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full py-4 text-center text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200/40 dark:border-slate-800/60 mt-auto relative z-10">
+        <p>How Well Do Your Friends Know You? &copy; 2026 • Single-File Magic ✨</p>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-6 right-6 transform translate-y-24 opacity-0 transition-all duration-300 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 z-50">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toast-message" class="text-sm font-bold">Notification</span>
+    </div>
+
+    <!-- Friend Response Details Modal -->
+    <div id="modal-backdrop" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl max-w-lg w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border">
+            <div class="p-5 border-b border-slate-200/30 flex justify-between items-center bg-slate-500/5">
+                <div>
+                    <h3 id="modal-title" class="font-extrabold text-lg text-slate-900 dark:text-white">Friend Details</h3>
+                    <p id="modal-subtitle" class="text-xs text-slate-500 dark:text-slate-400"></p>
+                </div>
+                <button onclick="closeModal()" class="w-9 h-9 rounded-full bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:scale-110 transition flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="modal-content" class="p-5 overflow-y-auto space-y-4">
+                <!-- Modal Body Dynamic Content -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const QUESTION_BANK = [
+        // MOODS (20)
+        { id: 'm1', category: 'moods', question: "What usually cheers me up when I'm down?", options: ["Listening to music", "Eating comfort food", "Venting to a friend", "Having uninterrupted alone time"] },
+        { id: 'm2', category: 'moods', question: "When I'm stressed, what am I most likely to do?", options: ["Clean or organize everything", "Overthink silently", "Sleep it off", "Exercise / move around"] },
+        { id: 'm3', category: 'moods', question: "What kind of day puts me in the absolute best mood?", options: ["A lazy day in bed", "An adventurous outdoor day", "A productive checklist day", "A night out with friends"] },
+        { id: 'm4', category: 'moods', question: "How do I act when I'm really angry?", options: ["I get completely silent", "I express it right away", "I rant dramatically", "I pretend everything is fine"] },
+        { id: 'm5', category: 'moods', question: "What instantly ruins my mood?", options: ["Bad Wi-Fi / Tech issues", "Rude or arrogant people", "Being rushed / traffic", "Unexpected plan changes"] },
+        { id: 'm6', category: 'moods', question: "How do I deal with embarrassing moments?", options: ["Laugh at myself immediately", "Hide/cringe forever inside", "Pretend it didn't happen", "Tell everyone dramatically"] },
+        { id: 'm7', category: 'moods', question: "What is my default energy level on a Monday morning?", options: ["Ready to crush it!", "Need 3 coffees first", "Zombie mode activated", "Calm and steady"] },
+        { id: 'm8', category: 'moods', question: "How do I react to surprise parties or unexpected guests?", options: ["Love it!", "Stress out initially", "Hate surprises", "Polite but anxious inside"] },
+        { id: 'm9', category: 'moods', question: "What makes me feel most appreciated?", options: ["Verbal compliments", "Helpful favors", "Thoughtful gifts", "Quality time together"] },
+        { id: 'm10', category: 'moods', question: "How do I handle confrontation?", options: ["Direct and calm", "Avoid it at all costs", "Get defensive fast", "Write a text message later"] },
+        { id: 'm11', category: 'moods', question: "What is my comfort media when feeling down?", options: ["Nostalgic movies", "Sad heartbreak music", "Uplifting comedy / YouTube", "True crime podcasts"] },
+        { id: 'm12', category: 'moods', question: "When I get super excited, I usually:", options: ["Scream and jump around", "Text everyone in ALL CAPS", "Smile quietly to myself", "Plan the next big thing"] },
+        { id: 'm13', category: 'moods', question: "What drains my social battery fastest?", options: ["Large crowds/networking", "Small talk with strangers", "Listening to complaints", "Being out for >4 hours"] },
+        { id: 'm14', category: 'moods', question: "My reaction when someone cancels plans last minute:", options: ["Relieved! (Home time)", "Annoyed / Upset", "Understanding & flexible", "Already found a backup plan"] },
+        { id: 'm15', category: 'moods', question: "How do I react when I get surprising good news?", options: ["Tell my best friend instantly", "Keep it to myself a bit", "Celebrate with a treat", "Post on social media"] },
+        { id: 'm16', category: 'moods', question: "My go-to coping mechanism for anxiety:", options: ["Deep breathing / meditation", "Distraction (Scrolling)", "Pacing / fidgeting", "Talking it through"] },
+        { id: 'm17', category: 'moods', question: "How easily do I hold grudges?", options: ["Forgive and forget fast", "I hold them forever", "Forgive but never forget", "Depends on the person"] },
+        { id: 'm18', category: 'moods', question: "When overwhelmed with tasks, I usually:", options: ["Make a detailed list", "Procrastinate until deadline", "Ask for help", "Freeze and do nothing"] },
+        { id: 'm19', category: 'moods', question: "How do I feel about my birthday celebrations?", options: ["Go big or go home!", "Low-key dinner with close ones", "Prefer a normal quiet day", "Vacation getaway"] },
+        { id: 'm20', category: 'moods', question: "What is my vibe when hanging out in a group?", options: ["The life of the party", "The funny commentary friend", "The listener / observer", "The planner / organizer"] },
+
+        // FUN (20)
+        { id: 'f1', category: 'fun', question: "What would I spend an unnecessary amount of money on?", options: ["Good food / Delivery", "Clothes / Shoes", "Gadgets / Tech", "Travel / Experiences"] },
+        { id: 'f2', category: 'fun', question: "What could I talk about for hours without stopping?", options: ["Movies & TV Shows", "Pop culture / Gossip", "Gaming or Hobbies", "Life theories & Big ideas"] },
+        { id: 'f3', category: 'fun', question: "What would I choose for a completely free day?", options: ["Binge-watching TV", "Exploring a new neighborhood", "Sleeping in till noon", "Hobby project or craft"] },
+        { id: 'f4', category: 'fun', question: "My role on a friend group road trip:", options: ["The Trip Planner", "The DJ / Driver", "The One Who Follows Along", "The Snack Master"] },
+        { id: 'f5', category: 'fun', question: "If I were in a horror movie, how long would I survive?", options: ["Dies first", "Survives till the end", "Is actually the villain", "Escapes in the middle"] },
+        { id: 'f6', category: 'fun', question: "What kind of texter am I?", options: ["Fast replies / Paragraphs", "Sends 10 short messages", "Takes 3 business days", "Voice notes only"] },
+        { id: 'f7', category: 'fun', question: "What is my worst habit?", options: ["Hitting snooze 5 times", "Snacking late at night", "Leaving messages on read", "Impulse shopping"] },
+        { id: 'f8', category: 'fun', question: "What's my guilty pleasure?", options: ["Reality TV shows", "Eating late night junk food", "Stalking randoms on social media", "Singing loudly in the shower"] },
+        { id: 'f9', category: 'fun', question: "How good am I at keeping secrets?", options: ["Vault status (100% safe)", "I try, but slip up", "Only if explicitly warned", "I tell my pet / partner"] },
+        { id: 'f10', category: 'fun', question: "My Karaoke go-to strategy:", options: ["Belt out a huge pop anthem", "Rap song with full energy", "Duet with a friend", "Refuse to touch the mic"] },
+        { id: 'f11', category: 'fun', question: "Stranded on an island, what single item am I bringing?", options: ["My phone", "A giant survival tool", "A cozy blanket", "Infinite snacks"] },
+        { id: 'f12', category: 'fun', question: "How late do I stay up usually?", options: ["Asleep before 10 PM", "Around 11 PM - 12 AM", "1 AM - 2 AM night owl", "Whenever my body collapses"] },
+        { id: 'f13', category: 'fun', question: "My signature photo pose:", options: ["Peace sign / Funny pose", "Model serious face", "Candid laugh", "Hiding behind others"] },
+        { id: 'f14', category: 'fun', question: "If I won $10,000 today, first thing I'd do is:", options: ["Book a luxury trip", "Save / invest all of it", "Go on a shopping spree", "Pay off debt / bills"] },
+        { id: 'f15', category: 'fun', question: "What comedy makes me laugh hardest?", options: ["Dark comedy", "Sarcasm & dry humor", "Slapstick & physical fails", "Relatable meme humor"] },
+        { id: 'f16', category: 'fun', question: "How organized is my room usually?", options: ["Spotless & aesthetic", "Organized chaos", "Messy but I know where stuff is", "Total disaster zone"] },
+        { id: 'f17', category: 'fun', question: "My main screen-time addiction:", options: ["TikTok / Reels", "YouTube", "Instagram / Twitter", "Mobile Games"] },
+        { id: 'f18', category: 'fun', question: "Which reality show would I have best chance winning?", options: ["Survivor", "The Amazing Race", "Big Brother", "MasterChef"] },
+        { id: 'f19', category: 'fun', question: "How do I handle cooking a complex meal?", options: ["Follow recipe religiously", "Wing it with vibe and intuition", "Order takeout instead", "Burn something guaranteed"] },
+        { id: 'f20', category: 'fun', question: "My go-to morning drink order:", options: ["Black Coffee / Espresso", "Sweet iced latte / Boba", "Matcha or Herbal Tea", "Water or Energy Drink"] },
+
+        // THIS OR THAT (20)
+        { id: 't1', category: 'this_or_that', question: "Beach or Mountains?", options: ["Beach 🏖️", "Mountains ⛰️"] },
+        { id: 't2', category: 'this_or_that', question: "Staying Home or Going Out?", options: ["Staying Home 🏠", "Going Out 🪩"] },
+        { id: 't3', category: 'this_or_that', question: "Sweet or Salty?", options: ["Sweet 🍫", "Salty 🍿"] },
+        { id: 't4', category: 'this_or_that', question: "Sunrise or Sunset?", options: ["Sunrise 🌅", "Sunset 🌇"] },
+        { id: 't5', category: 'this_or_that', question: "Call or Text?", options: ["Phone Call 📞", "Text Message 💬"] },
+        { id: 't6', category: 'this_or_that', question: "Dogs or Cats?", options: ["Dogs 🐶", "Cats 🐱"] },
+        { id: 't7', category: 'this_or_that', question: "Early Bird or Night Owl?", options: ["Early Bird ☀️", "Night Owl 🌙"] },
+        { id: 't8', category: 'this_or_that', question: "Cook at Home or Order Takeout?", options: ["Cook at Home 🧑‍🍳", "Order Takeout 🛵"] },
+        { id: 't9', category: 'this_or_that', question: "Summer or Winter?", options: ["Summer ☀️", "Winter ❄️"] },
+        { id: 't10', category: 'this_or_that', question: "Plan Everything or Be Spontaneous?", options: ["Plan Everything 📅", "Be Spontaneous 🎲"] },
+        { id: 't11', category: 'this_or_that', question: "Physical Book or E-Reader?", options: ["Physical Book 📖", "E-Reader / Digital 📱"] },
+        { id: 't12', category: 'this_or_that', question: "Coffee or Tea?", options: ["Coffee ☕", "Tea 🍵"] },
+        { id: 't13', category: 'this_or_that', question: "Cinema Theater or Home Couch?", options: ["Movie Theater 🍿", "Home Couch 🛋️"] },
+        { id: 't14', category: 'this_or_that', question: "City Trip or Nature Retreat?", options: ["Bustling City 🏙️", "Peaceful Nature 🌲"] },
+        { id: 't15', category: 'this_or_that', question: "Overdressed or Underdressed?", options: ["Overdressed 👔", "Underdressed 👟"] },
+        { id: 't16', category: 'this_or_that', question: "iOS (iPhone) or Android?", options: ["iPhone / iOS 🍎", "Android 🤖"] },
+        { id: 't17', category: 'this_or_that', question: "Amusement Park or Museum?", options: ["Amusement Park 🎢", "Museum / Gallery 🎨"] },
+        { id: 't18', category: 'this_or_that', question: "Save Money or Enjoy Spending?", options: ["Saver 💰", "Spender 🛍️️"] },
+        { id: 't19', category: 'this_or_that', question: "Comedy or Thriller/Horror?", options: ["Comedy 😂", "Thriller / Horror 😱"] },
+        { id: 't20', category: 'this_or_that', question: "Give Gifts or Receive Gifts?", options: ["Giving Gifts 🎁", "Receiving Gifts 🎉"] },
+
+        // DEEP (20)
+        { id: 'd1', category: 'deep', question: "What quality do I value most in a close friend?", options: ["Loyalty & Trust", "Sense of Humor", "Emotional Depth", "Honesty & Directness"] },
+        { id: 'd2', category: 'deep', question: "What would hurt me more in a relationship?", options: ["Being misunderstood", "Being ignored/neglected", "Being lied to", "Being replaced"] },
+        { id: 'd3', category: 'deep', question: "What drives my long-term life decisions?", options: ["Peace & Happiness", "Financial Freedom", "Impact & Purpose", "Adventure & Excitement"] },
+        { id: 'd4', category: 'deep', question: "How do I define personal success?", options: ["Inner peace & good health", "Strong loving relationships", "Achieving high career goals", "Living freely without stress"] },
+        { id: 'd5', category: 'deep', question: "What is my biggest fear about the future?", options: ["Not reaching my potential", "Losing loved ones", "Financial instability", "Regretting missed chances"] },
+        { id: 'd6', category: 'deep', question: "How easily do I trust new people?", options: ["Immediately open & warm", "Cautious until proven", "Very guarded & slow", "Trust everyone until burned"] },
+        { id: 'd7', category: 'deep', question: "When I make a mistake, my instinct is to:", options: ["Own it immediately", "Analyze what went wrong", "Feel guilty for days", "Fix it quietly"] },
+        { id: 'd8', category: 'deep', question: "What topic can I get surprisingly deep about?", options: ["Human psychology / behavior", "Destiny & Karma", "The universe & existence", "Love & Relationships"] },
+        { id: 'd9', category: 'deep', question: "My relationship with nostalgia:", options: ["Always dwelling in good memories", "Appreciative but forward-looking", "Rarely look back", "Makes me feel melancholic"] },
+        { id: 'd10', category: 'deep', question: "How do I express love or care to people?", options: ["Acts of service / helping", "Quality time together", "Words of encouragement", "Giving meaningful tokens"] },
+        { id: 'd11', category: 'deep', question: "What kind of advice do people usually seek from me?", options: ["Practical logical solutions", "Emotional support & empathy", "Honest reality checks", "Creative perspective"] },
+        { id: 'd12', category: 'deep', question: "Do I listen to my head or my heart more?", options: ["100% Logic / Head", "100% Instinct / Heart", "50/50 struggle daily", "Gut feeling / Intuition"] },
+        { id: 'd13', category: 'deep', question: "My stance on second chances:", options: ["Everyone deserves second chances", "Depends entirely on intention", "Once trust is broken, it's done", "Hard to give, but possible"] },
+        { id: 'd14', category: 'deep', question: "What makes me feel most accomplished?", options: ["Overcoming a tough challenge", "Helping someone else succeed", "Finishing a long project", "Learning a difficult skill"] },
+        { id: 'd15', category: 'deep', question: "How do I feel about solitude?", options: ["Need it to survive & recharge", "Enjoy it in small doses", "Prefer being around people", "Loneliness hits quickly"] },
+        { id: 'd16', category: 'deep', question: "What compliment means the most to me?", options: ["'You are so thoughtful'", "'You are super capable/smart'", "'You are hilarious'", "'You bring good energy'"] },
+        { id: 'd17', category: 'deep', question: "How do I react to major life changes?", options: ["Embrace the fresh start", "Anxious at first, then adapt", "Resist change as much as possible", "Analyze all risks deeply"] },
+        { id: 'd18', category: 'deep', question: "My biggest strength as a person:", options: ["Resilience & perseverance", "Empathy & kindness", "Creativity & resourcefulness", "Authenticity & honesty"] },
+        { id: 'd19', category: 'deep', question: "My relationship with social media:", options: ["Love scrolling & sharing", "Silent lurker / rarely post", "Love-hate relationship", "Barely use it"] },
+        { id: 'd20', category: 'deep', question: "What is my ideal legacy?", options: ["To be remembered as kind", "To build something lasting", "To inspire others", "To have lived life fully"] },
+
+        // HYPOTHETICALS (20)
+        { id: 'h1', category: 'hypotheticals', question: "If I could live anywhere for 1 year, where would I choose?", options: ["Cozy European town", "Bustling metropolis (Tokyo/NYC)", "Tropical island beach", "Peaceful mountain countryside"] },
+        { id: 'h2', category: 'hypotheticals', question: "If I could instantly master one skill, what would it be?", options: ["Speaking all languages", "Playing any musical instrument", "Mastering financial investments", "Expert coding / building"] },
+        { id: 'h3', category: 'hypotheticals', question: "If I could have dinner with any historic figure:", options: ["Albert Einstein / Scientist", "Leonardo da Vinci / Artist", "Cleopatra / Ruler", "An iconic philosopher"] },
+        { id: 'h4', category: 'hypotheticals', question: "If I suddenly had a completely free sabbatical year with pay, I'd:", options: ["Travel the world non-stop", "Start my dream passion project", "Relax, sleep, and rejuvenate", "Learn 5 new skills"] },
+        { id: 'h5', category: 'hypotheticals', question: "If I found $500 cash on the street, I would:", options: ["Try to find the owner", "Turn it in to authorities", "Keep cash, leave wallet", "Donate it to charity"] },
+        { id: 'h6', category: 'hypotheticals', question: "If I could have a superpower, which one am I picking?", options: ["Teleportation anywhere", "Time travel", "Reading minds", "Invisibility"] },
+        { id: 'h7', category: 'hypotheticals', question: "If I had to enter a TV game show, which one am I winning?", options: ["Trivia / Jeopardy", "Physical obstacle course", "Cooking competition", "Strategy / Social game"] },
+        { id: 'h8', category: 'hypotheticals', question: "If I could time travel, where am I going first?", options: ["The Ancient Past (Pyramids/Rome)", "The 1980s / 90s era", "100 years into the Future", "To replay my childhood"] },
+        { id: 'h9', category: 'hypotheticals', question: "If given $1 Million to spend in 24 hours, I'd buy:", options: ["Real Estate / Houses", "Luxury cars & jewelry", "Stocks & Businesses", "Infinite trips & experiences"] },
+        { id: 'h10', category: 'hypotheticals', question: "If I could speak to animals, which one am I talking to first?", options: ["Dogs", "Cats", "Birds", "Wild dolphins / whales"] },
+        { id: 'h11', category: 'hypotheticals', question: "If I could swap lives with a celebrity for one week:", options: ["An A-list movie actor", "A world famous musician", "A tech billionaire", "A top athlete"] },
+        { id: 'h12', category: 'hypotheticals', question: "If I had to live in a fictional movie universe:", options: ["Harry Potter / Magic World", "Marvel / Superhero Universe", "Star Wars / Space Era", "Cozy Studio Ghibli world"] },
+        { id: 'h13', category: 'hypotheticals', question: "If I could eliminate one thing from existence forever:", options: ["Traffic & commuting", "Mosquitoes", "Bad manners / Rudeness", "Alarm clocks"] },
+        { id: 'h14', category: 'hypotheticals', question: "If offered a 1-way ticket to Mars, I would:", options: ["No way, staying on Earth!", "Yes, history maker!", "Only if friends come too", "Maybe if I get good Wi-Fi"] },
+        { id: 'h15', category: 'hypotheticals', question: "If I had to eat only ONE cuisine for the rest of my life:", options: ["Italian (Pizza/Pasta)", "Japanese (Sushi/Ramen)", "Mexican (Tacos/Burritos)", "Indian / Spicy Curry"] },
+        { id: 'h16', category: 'hypotheticals', question: "If I could know one ultimate truth, I'd ask:", options: ["Is there alien life?", "What happens after death?", "How was the universe born?", "Who secretly loved me?"] },
+        { id: 'h17', category: 'hypotheticals', question: "Trade 10 IQ points for 10% more attractiveness?", options: ["Yes, instantly!", "No way, intelligence first", "Already attractive enough 😉", "Depends on my mood"] },
+        { id: 'h18', category: 'hypotheticals', question: "If my life was a movie, what genre would it be?", options: ["Coming-of-Age Comedy", "High-stakes Drama", "Action Adventure", "Cozy Indie Film"] },
+        { id: 'h19', category: 'hypotheticals', question: "If I had to change my name forever, I'd pick something:", options: ["Classic & Elegant", "Short & Modern", "Exotic & Unique", "Keep my current name!"] },
+        { id: 'h20', category: 'hypotheticals', question: "If I opened a small business tomorrow, it would be a:", options: ["Cozy Coffee Shop / Bakery", "Independent Bookstore", "Boutique Fashion Store", "Tech Startup"] }
+    ];
+
+    function initFloatingParticles() {
+        const container = document.getElementById('floating-particles');
+        const emojis = ['👀', '✨', '🔥', '💖', '🧠', '👑', '🎉', '🎲', '💬', '⚡'];
+        container.innerHTML = '';
+        
+        for (let i = 0; i < 18; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle text-2xl sm:text-3xl';
+            particle.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            particle.style.left = `${Math.random() * 95}vw`;
+            particle.style.animationDuration = `${6 + Math.random() * 8}s`;
+            particle.style.animationDelay = `${Math.random() * 5}s`;
+            container.appendChild(particle);
+        }
+    }
+
+    // Audio SFX Synthesis (No external MP3 files needed)
+    function playSound(type) {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            if (type === 'select') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.1);
+            } else if (type === 'celebrate') {
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, idx) => {
+                    const o = ctx.createOscillator();
+                    const g = ctx.createGain();
+                    o.connect(g);
+                    g.connect(ctx.destination);
+                    o.frequency.setValueAtTime(freq, ctx.currentTime + (idx * 0.08));
+                    g.gain.setValueAtTime(0.2, ctx.currentTime + (idx * 0.08));
+                    g.gain.linearRampToValueAtTime(0.01, ctx.currentTime + (idx * 0.08) + 0.25);
+                    o.start(ctx.currentTime + (idx * 0.08));
+                    o.stop(ctx.currentTime + (idx * 0.08) + 0.25);
+                });
+            }
+        } catch(e) {
+            // Audio Context blocked or unsupported
+        }
+    }
+
+    // Trigger Screen Confetti
+    function triggerConfetti() {
+        if (typeof confetti === 'function') {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+        }
+    }
+
+    // Theme Controller
+    function toggleDarkMode() {
+        const html = document.documentElement;
+        const icon = document.getElementById('theme-toggle-icon');
+        if (html.classList.contains('dark')) {
+            html.classList.remove('dark');
+            html.classList.add('light');
+            icon.className = 'fa-solid fa-moon text-lg text-slate-700';
+            localStorage.setItem('knowme_theme', 'light');
+        } else {
+            html.classList.remove('light');
+            html.classList.add('dark');
+            icon.className = 'fa-solid fa-sun text-lg text-amber-400';
+            localStorage.setItem('knowme_theme', 'dark');
+        }
+    }
+
+    function initTheme() {
+        const savedTheme = localStorage.getItem('knowme_theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.remove('light');
+            document.documentElement.classList.add('dark');
+            if (icon) icon.className = 'fa-solid fa-sun text-lg text-amber-400';
+        } else {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+            if (icon) icon.className = 'fa-solid fa-moon text-lg text-slate-700';
+        }
+    }
+
+    // Storage Management Engine
+    const Storage = {
+        getKey: (id) => `knowme_quiz_${id}`,
+        saveQuiz: (quiz) => {
+            try {
+                localStorage.setItem(Storage.getKey(quiz.id), JSON.stringify(quiz));
+                return true;
+            } catch (e) {
+                console.error('LocalStorage write error', e);
+                return false;
+            }
+        },
+        getQuiz: (id) => {
+            try {
+                const data = localStorage.getItem(Storage.getKey(id));
+                return data ? JSON.parse(data) : null;
+            } catch (e) {
+                console.error('LocalStorage read error', e);
+                return null;
+            }
+        },
+        saveResponse: (quizId, response) => {
+            const quiz = Storage.getQuiz(quizId);
+            if (!quiz) return false;
+            if (!quiz.responses) quiz.responses = [];
+            quiz.responses.push(response);
+            return Storage.saveQuiz(quiz);
+        }
+    };
+
+    function generateId(length = 6) {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    }
+
+    function showToast(message, iconClass = "fa-solid fa-circle-check text-emerald-400") {
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toast-message');
+        const toastIcon = document.getElementById('toast-icon');
+        
+        toastMsg.innerText = message;
+        toastIcon.className = iconClass;
+        
+        toast.classList.remove('translate-y-24', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+        
+        setTimeout(() => {
+            toast.classList.remove('translate-y-0', 'opacity-100');
+            toast.classList.add('translate-y-24', 'opacity-0');
+        }, 3200);
+    }
+
+    function openModal(title, subtitle, htmlContent) {
+        document.getElementById('modal-title').innerText = title;
+        document.getElementById('modal-subtitle').innerText = subtitle;
+        document.getElementById('modal-content').innerHTML = htmlContent;
+        document.getElementById('modal-backdrop').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('modal-backdrop').classList.add('hidden');
+    }
+
+    class AppRouter {
+        constructor() {
+            this.viewport = document.getElementById('app-viewport');
+            this.creationState = { creatorName: '', category: null, questions: [], answers: {}, currentIndex: 0 };
+            this.friendState = { quiz: null, friendName: '', predictedScore: 8, answers: {}, currentIndex: 0 };
+
+            window.addEventListener('hashchange', () => this.handleRoute());
+            window.addEventListener('load', () => {
+                initTheme();
+                initFloatingParticles();
+                this.handleRoute();
+            });
+        }
+
+        navigate(hash) {
+            window.location.hash = hash;
+        }
+
+        handleRoute() {
+            const hash = window.location.hash.replace('#', '');
+            const parts = hash.split('/');
+            const route = parts[0] || '';
+            const param = parts[1] || '';
+
+            if (route === '') this.renderLanding();
+            else if (route === 'categories') this.renderCategorySelection();
+            else if (route === 'create') this.renderCreatorFlow();
+            else if (route === 'share') this.renderSharePage(param);
+            else if (route === 'quiz') this.renderFriendLanding(param);
+            else if (route === 'take') this.renderFriendFlow();
+            else if (route === 'friend-result') this.renderFriendResults(param);
+            else if (route === 'results') this.renderCreatorDashboard(param);
+            else if (route === 'join') this.renderManualCodeEntry();
+            else this.render404();
+        }
+
+        renderLanding() {
+            this.viewport.innerHTML = `
+                <div class="glass-card rounded-3xl p-6 sm:p-10 shadow-xl text-center space-y-8 animate-fade-in">
+                    <div class="inline-block p-4 bg-indigo-500/10 rounded-3xl animate-float-slow">
+                        <span class="text-5xl sm:text-6xl">👀</span>
+                    </div>
+                    <div class="space-y-3">
+                        <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
+                            How Well Do Your Friends <span class="gradient-text">Know You?</span>
+                        </h1>
+                        <p class="text-slate-600 dark:text-slate-300 text-sm sm:text-base max-w-md mx-auto leading-relaxed">
+                            Create a personalized quiz about yourself, share it with your inner circle, and crown your true best friend! ✨
+                        </p>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center pt-2">
+                        <button onclick="router.startQuizCreation()" class="gradient-btn text-white font-extrabold py-4 px-8 rounded-2xl text-lg shadow-xl flex items-center justify-center gap-2 group">
+                            <i class="fa-solid fa-wand-magic-sparkles group-hover:rotate-12 transition-transform"></i> Create My Quiz
+                        </button>
+                        <button onclick="router.navigate('join')" class="bg-slate-200/60 dark:bg-slate-800 hover:bg-slate-300/80 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold py-4 px-6 rounded-2xl text-lg border border-slate-300/50 dark:border-slate-700 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-gamepad"></i> Take Friend's Quiz
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6 border-t border-slate-200/40 dark:border-slate-800/60 text-left">
+                        <div class="p-3.5 bg-slate-500/5 rounded-2xl border border-slate-200/30 dark:border-slate-800/30 space-y-1">
+                            <div class="text-indigo-600 dark:text-indigo-400 font-extrabold text-sm flex items-center gap-1.5"><i class="fa-solid fa-1"></i> Answer</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400">Pick 10 questions about your personality & habits.</div>
+                        </div>
+                        <div class="p-3.5 bg-slate-500/5 rounded-2xl border border-slate-200/30 dark:border-slate-800/30 space-y-1">
+                            <div class="text-purple-600 dark:text-purple-400 font-extrabold text-sm flex items-center gap-1.5"><i class="fa-solid fa-2"></i> Share</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400">Send your unique link on WhatsApp or social media.</div>
+                        </div>
+                        <div class="p-3.5 bg-slate-500/5 rounded-2xl border border-slate-200/30 dark:border-slate-800/30 space-y-1">
+                            <div class="text-pink-600 dark:text-pink-400 font-extrabold text-sm flex items-center gap-1.5"><i class="fa-solid fa-3"></i> Leaderboard</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400">See who predicted best and who scored 10/10!</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        renderManualCodeEntry() {
+            this.viewport.innerHTML = `
+                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl max-w-md mx-auto space-y-6">
+                    <button onclick="router.navigate('')" class="text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-1.5 font-bold transition">
+                        <i class="fa-solid fa-arrow-left"></i> Back Home
+                    </button>
+                    <div class="text-center space-y-2">
+                        <div class="text-4xl animate-bounce">🔑</div>
+                        <h2 class="text-2xl font-black text-slate-900 dark:text-white">Enter Quiz Code</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Have a 6-character code from a friend? Enter it below.</p>
+                    </div>
+                    <form onsubmit="event.preventDefault(); router.submitCode();" class="space-y-4">
+                        <div>
+                            <input id="code-input" type="text" placeholder="e.g. 8FJ29K" maxlength="6" 
+                                   class="w-full text-center tracking-widest text-3xl font-black uppercase py-3.5 px-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 focus:border-indigo-500 focus:outline-none transition">
+                        </div>
+                        <button type="submit" class="gradient-btn w-full text-white font-extrabold py-3.5 rounded-2xl shadow-lg flex items-center justify-center gap-2">
+                            Find Quiz <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </form>
+                </div>
+            `;
+        }
+
+        submitCode() {
+            const input = document.getElementById('code-input').value.trim().toUpperCase();
+            if (!input || input.length < 4) {
+                showToast("Please enter a valid Quiz Code", "fa-solid fa-triangle-exclamation text-amber-400");
+                return;
+            }
+            const quiz = Storage.getQuiz(input);
+            if (quiz) {
+                playSound('select');
+                this.navigate(`quiz/${input}`);
+            } else {
+                showToast("Quiz not found! Check code and try again.", "fa-solid fa-circle-xmark text-rose-400");
+            }
+        }
+
+        startQuizCreation() {
+            playSound('select');
+            this.creationState = { creatorName: '', category: null, questions: [], answers: {}, currentIndex: 0 };
+            this.navigate('categories');
+        }
+
+        renderCategorySelection() {
+            this.viewport.innerHTML = `
+                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-200/40 dark:border-slate-800/60 pb-4">
+                        <div>
+                            <h2 class="text-2xl font-black text-slate-900 dark:text-white">Choose a Category</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Select what vibe your 10 questions should be</p>
+                        </div>
+                        <span class="text-3xl animate-pulse">🎯</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Your Name / Nickname</label>
+                            <input id="creator-name-input" type="text" value="${this.creationState.creatorName || ''}" placeholder="e.g. Maryam" 
+                                   class="w-full text-base font-bold py-3.5 px-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 focus:border-indigo-500 focus:outline-none transition">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
+                            <button onclick="router.selectCategory('moods')" class="p-4 rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 hover:border-indigo-500 bg-white/40 dark:bg-slate-800/40 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/30 text-left transition space-y-1 group shadow-sm">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-3xl transition-transform group-hover:scale-110">😊</span>
+                                    <span class="text-[10px] bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 font-extrabold px-2 py-0.5 rounded-full">20 Qs</span>
+                                </div>
+                                <div class="font-extrabold text-slate-800 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Moods</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400">Emotions, habits, stress, and energy levels.</div>
+                            </button>
+
+                            <button onclick="router.selectCategory('fun')" class="p-4 rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 hover:border-indigo-500 bg-white/40 dark:bg-slate-800/40 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/30 text-left transition space-y-1 group shadow-sm">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-3xl transition-transform group-hover:scale-110">😂</span>
+                                    <span class="text-[10px] bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 font-extrabold px-2 py-0.5 rounded-full">20 Qs</span>
+                                </div>
+                                <div class="font-extrabold text-slate-800 dark:text-slate-100 group-hover:text-purple-600 dark:group-hover:text-purple-400">Fun</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400">Lighthearted, funny, screen-time & money habits.</div>
+                            </button>
+
+                            <button onclick="router.selectCategory('this_or_that')" class="p-4 rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 hover:border-indigo-500 bg-white/40 dark:bg-slate-800/40 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/30 text-left transition space-y-1 group shadow-sm">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-3xl transition-transform group-hover:scale-110">⚖️</span>
+                                    <span class="text-[10px] bg-pink-100 dark:bg-pink-900/60 text-pink-700 dark:text-pink-300 font-extrabold px-2 py-0.5 rounded-full">20 Qs</span>
+                                </div>
+                                <div class="font-extrabold text-slate-800 dark:text-slate-100 group-hover:text-pink-600 dark:group-hover:text-pink-400">This or That</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400">Beach vs Mountains, Early Bird vs Night Owl.</div>
+                            </button>
+
+                            <button onclick="router.selectCategory('deep')" class="p-4 rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 hover:border-indigo-500 bg-white/40 dark:bg-slate-800/40 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/30 text-left transition space-y-1 group shadow-sm">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-3xl transition-transform group-hover:scale-110">🧠</span>
+                                    <span class="text-[10px] bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-extrabold px-2 py-0.5 rounded-full">20 Qs</span>
+                                </div>
+                                <div class="font-extrabold text-slate-800 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400">Deep</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400">Values, friendship standards & life philosophy.</div>
+                            </button>
+
+                            <button onclick="router.selectCategory('hypotheticals')" class="p-4 rounded-2xl border-2 border-slate-200/80 dark:border-slate-700/80 hover:border-indigo-500 bg-white/40 dark:bg-slate-800/40 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/30 text-left transition space-y-1 group shadow-sm">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-3xl transition-transform group-hover:scale-110">🌎</span>
+                                    <span class="text-[10px] bg-teal-100 dark:bg-teal-900/60 text-teal-700 dark:text-teal-300 font-extrabold px-2 py-0.5 rounded-full">20 Qs</span>
+                                </div>
+                                <div class="font-extrabold text-slate-800 dark:text-slate-100 group-hover:text-teal-600 dark:group-hover:text-teal-400">Hypotheticals</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400">What-if scenarios, powers & dream sabbatical.</div>
+                            </button>
+
+                            <button onclick="router.selectCategory('mix')" class="p-4 rounded-2xl border-2 border-amber-300 dark:border-amber-600/80 hover:border-amber-500 bg-gradient-to-br from-amber-500/10 to-orange-500/10 text-left transition space-y-1 group shadow-sm">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-3xl transition-transform group-hover:rotate-45">🎲</span>
+                                    <span class="text-[10px] bg-amber-200 dark:bg-amber-900/80 text-amber-900 dark:text-amber-200 font-extrabold px-2 py-0.5 rounded-full">100+ Pool</span>
+                                </div>
+                                <div class="font-extrabold text-slate-800 dark:text-slate-100 group-hover:text-amber-600 dark:group-hover:text-amber-400">Mix All</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400">Random chaotic selection across all categories!</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        selectCategory(catKey) {
+            const nameInput = document.getElementById('creator-name-input').value.trim();
+            if (!nameInput) {
+                showToast("Please enter your name first!", "fa-solid fa-triangle-exclamation text-amber-400");
+                document.getElementById('creator-name-input').focus();
+                return;
+            }
+
+            playSound('select');
+            this.creationState.creatorName = nameInput;
+            this.creationState.category = catKey;
+
+            let pool = catKey === 'mix' ? [...QUESTION_BANK] : QUESTION_BANK.filter(q => q.category === catKey);
+            const shuffled = [...pool].sort(() => 0.5 - Math.random());
+            this.creationState.questions = shuffled.slice(0, 10);
+            this.creationState.currentIndex = 0;
+            this.creationState.answers = {};
+
+            this.navigate('create');
+        }
+
+        renderCreatorFlow() {
+            const state = this.creationState;
+            if (!state.questions || state.questions.length === 0) {
+                this.navigate('categories');
+                return;
+            }
+
+            const q = state.questions[state.currentIndex];
+            const progressPct = ((state.currentIndex + 1) / 10) * 100;
+            const currentAnswer = state.answers[q.id];
+
+            this.viewport.innerHTML = `
+                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs font-black tracking-wider text-slate-400">
+                            <span>QUESTION ${state.currentIndex + 1} OF 10</span>
+                            <span class="text-indigo-500 uppercase">${state.creatorName}'s Quiz</span>
+                        </div>
+                        <div class="w-full bg-slate-200/60 dark:bg-slate-700/60 h-3 rounded-full overflow-hidden p-0.5 border border-slate-300/30 dark:border-slate-600/30">
+                            <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 h-full transition-all duration-300 rounded-full" style="width: ${progressPct}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="py-2 space-y-4">
+                        <h3 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-snug">
+                            ${q.question}
+                        </h3>
+
+                        <div class="space-y-3 pt-2">
+                            ${q.options.map((opt) => `
+                                <button onclick="router.answerCreatorQuestion('${q.id}', '${opt.replace(/'/g, "\\'")}')" 
+                                        class="w-full p-4 rounded-2xl text-left border-2 transition-all font-extrabold flex items-center justify-between group
+                                        ${currentAnswer === opt 
+                                            ? 'border-indigo-500 bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 shadow-md scale-[1.01]' 
+                                            : 'border-slate-200/80 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 bg-white/40 dark:bg-slate-800/40 text-slate-800 dark:text-slate-200'}">
+                                    <span class="text-sm sm:text-base">${opt}</span>
+                                    <i class="${currentAnswer === opt ? 'fa-solid fa-circle-check text-indigo-500 text-lg' : 'fa-regular fa-circle text-slate-300 dark:text-slate-600 group-hover:text-slate-400'}"></i>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center pt-4 border-t border-slate-200/40 dark:border-slate-800/60">
+                        <button onclick="router.prevCreatorQuestion()" 
+                                class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-20 transition"
+                                ${state.currentIndex === 0 ? 'disabled' : ''}>
+                            <i class="fa-solid fa-arrow-left mr-1"></i> Back
+                        </button>
+
+                        ${state.currentIndex === 9 ? `
+                            <button onclick="router.saveCreatorQuiz()" 
+                                    class="gradient-btn text-white font-extrabold py-3.5 px-7 rounded-2xl shadow-xl flex items-center gap-2 ${!currentAnswer ? 'opacity-50 cursor-not-allowed' : ''}">
+                                Create My Quiz <i class="fa-solid fa-rocket"></i>
+                            </button>
+                        ` : `
+                            <button onclick="router.nextCreatorQuestion()" 
+                                    class="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-white font-extrabold py-3.5 px-6 rounded-2xl shadow transition flex items-center gap-2 ${!currentAnswer ? 'opacity-50 cursor-not-allowed' : ''}">
+                                Next <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        answerCreatorQuestion(qId, answer) {
+            playSound('select');
+            this.creationState.answers[qId] = answer;
+            this.renderCreatorFlow();
+        }
+
+        nextCreatorQuestion() {
+            const q = this.creationState.questions[this.creationState.currentIndex];
+            if (!this.creationState.answers[q.id]) {
+                showToast("Please choose an answer before moving on!", "fa-solid fa-hand text-amber-400");
+                return;
+            }
+            if (this.creationState.currentIndex < 9) {
+                this.creationState.currentIndex++;
+                this.renderCreatorFlow();
+            }
+        }
+
+        prevCreatorQuestion() {
+            if (this.creationState.currentIndex > 0) {
+                this.creationState.currentIndex--;
+                this.renderCreatorFlow();
+            }
+        }
+
+        saveCreatorQuiz() {
+            const state = this.creationState;
+            for (let q of state.questions) {
+                if (!state.answers[q.id]) {
+                    showToast("Please answer all 10 questions!", "fa-solid fa-triangle-exclamation text-amber-400");
+                    return;
+                }
+            }
+
+            const quizId = generateId();
+            const quizData = {
+                id: quizId,
+                creatorName: state.creatorName,
+                category: state.category,
+                questions: state.questions,
+                answers: state.answers,
+                createdAt: new Date().toISOString(),
+                responses: []
+            };
+
+            Storage.saveQuiz(quizData);
+            triggerConfetti();
+            playSound('celebrate');
+            showToast("Quiz Created Successfully! 🎉");
+            this.navigate(`share/${quizId}`);
+        }
+
+        renderSharePage(quizId) {
+            const quiz = Storage.getQuiz(quizId);
+            if (!quiz) {
+                this.render404();
+                return;
+            }
+
+            const fullUrl = `${window.location.origin}${window.location.pathname}#quiz/${quizId}`;
+
+            this.viewport.innerHTML = `
+                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl text-center space-y-6">
+                    <div class="inline-block p-4 bg-emerald-500/10 rounded-full text-4xl text-emerald-500 animate-bounce">
+                        🎉
+                    </div>
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">Your Quiz is Ready!</h2>
+                        <p class="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1">Send this link to your friends and find out who knows you best.</p>
+                    </div>
+
+                    <div class="bg-slate-500/5 p-4 rounded-2xl space-y-3 border border-slate-200/40 dark:border-slate-800/60">
+                        <div class="text-xs text-slate-400 font-extrabold uppercase tracking-wider">Unique Quiz Code</div>
+                        <div class="text-3xl sm:text-4xl font-black tracking-widest text-indigo-500 select-all">${quiz.id}</div>
+                        <div class="text-xs truncate bg-white/60 dark:bg-slate-800/60 py-2.5 px-3 rounded-xl border border-slate-200/50 dark:border-slate-700/50 text-slate-500 dark:text-slate-400 font-mono">
+                            ${fullUrl}
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button onclick="router.copyShareLink('${fullUrl}')" class="gradient-btn text-white font-extrabold py-3.5 px-6 rounded-2xl shadow-lg flex-1 flex items-center justify-center gap-2">
+                            <i class="fa-regular fa-copy"></i> Copy Quiz Link
+                        </button>
+                        <button onclick="router.navigate('results/${quiz.id}')" class="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-extrabold py-3.5 px-6 rounded-2xl shadow-lg flex-1 flex items-center justify-center gap-2 hover:opacity-90 transition">
+                            <i class="fa-solid fa-chart-simple"></i> View Dashboard
+                        </button>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-200/40 dark:border-slate-800/60 flex justify-center gap-4 text-xs font-bold text-slate-400">
+                        <span><i class="fa-solid fa-layer-group text-indigo-500 mr-1"></i> ${quiz.questions.length} Questions</span>
+                        <span><i class="fa-solid fa-user text-purple-500 mr-1"></i> ${quiz.creatorName}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        copyShareLink(url) {
+            const tempInput = document.createElement("input");
+            tempInput.value = url;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+            playSound('select');
+            showToast("Link copied to clipboard! 📋");
+        }
+
+        renderFriendLanding(quizId) {
+            const quiz = Storage.getQuiz(quizId);
+            if (!quiz) {
+                this.render404();
+                return;
+            }
+
+            this.friendState.quiz = quiz;
+            this.friendState.friendName = '';
+            this.friendState.predictedScore = 8;
+            this.friendState.answers = {};
+            this.friendState.currentIndex = 0;
+
+            this.viewport.innerHTML = `
+                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl space-y-6 text-center max-w-md mx-auto">
+                    <div class="text-5xl animate-bounce">👀</div>
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-900 dark:text-white">How well do you know <span class="gradient-text">${quiz.creatorName}</span>?</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Before you start, predict your score and test your real friendship!</p>
+                    </div>
+
+                    <div class="space-y-4 text-left pt-2">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Your Name / Nickname</label>
+                            <input id="friend-name-input" type="text" placeholder="e.g. Sarah" 
+                                   class="w-full text-base font-bold py-3.5 px-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 focus:border-indigo-500 focus:outline-none transition">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Predict Your Score (0 to 10)</label>
+                            <div class="flex items-center gap-3 bg-slate-500/10 p-3.5 rounded-2xl border border-slate-200/40 dark:border-slate-800/60">
+                                <input id="prediction-range" type="range" min="0" max="10" value="8" 
+                                       oninput="document.getElementById('prediction-val').innerText = this.value"
+                                       class="w-full accent-indigo-500">
+                                <span class="font-black text-lg text-indigo-500 w-14 text-center bg-white dark:bg-slate-800 py-1 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                                    <span id="prediction-val">8</span>/10
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="router.startFriendQuiz()" class="gradient-btn w-full text-white font-extrabold py-4 rounded-2xl shadow-xl text-lg flex items-center justify-center gap-2">
+                        Start Quiz <i class="fa-solid fa-play"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        startFriendQuiz() {
+            const nameInput = document.getElementById('friend-name-input').value.trim();
+            if (!nameInput) {
+                showToast("Please enter your name!", "fa-solid fa-triangle-exclamation text-amber-400");
+                document.getElementById('friend-name-input').focus();
+                return;
+            }
+
+            playSound('select');
+            const prediction = parseInt(document.getElementById('prediction-range').value);
+            this.friendState.friendName = nameInput;
+            this.friendState.predictedScore = prediction;
+
+            this.navigate('take');
+        }
+
+        renderFriendFlow() {
+            const state = this.friendState;
+            if (!state.quiz) {
+                this.navigate('');
+                return;
+            }
+
+            const q = state.quiz.questions[state.currentIndex];
+            const progressPct = ((state.currentIndex + 1) / 10) * 100;
+            const currentAnswer = state.answers[q.id];
+
+            const displayQuestion = q.question.replace(/\b(I|me|my)\b/gi, (match) => {
+                if (match.toLowerCase() === 'my') return `${state.quiz.creatorName}'s`;
+                if (match.toLowerCase() === 'i') return state.quiz.creatorName;
+                if (match.toLowerCase() === 'me') return state.quiz.creatorName;
+                return match;
+            });
+
+            this.viewport.innerHTML = `
+                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs font-black tracking-wider text-slate-400">
+                            <span>QUESTION ${state.currentIndex + 1} OF 10</span>
+                            <span class="text-indigo-500 uppercase">Testing ${state.quiz.creatorName}</span>
+                        </div>
+                        <div class="w-full bg-slate-200/60 dark:bg-slate-700/60 h-3 rounded-full overflow-hidden p-0.5 border border-slate-300/30 dark:border-slate-600/30">
+                            <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 h-full transition-all duration-300 rounded-full" style="width: ${progressPct}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="py-2 space-y-4">
+                        <div class="text-xs font-black text-indigo-500 uppercase tracking-wider">What would ${state.quiz.creatorName} choose?</div>
+                        <h3 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-snug">
+                            ${displayQuestion}
+                        </h3>
+
+                        <div class="space-y-3 pt-2">
+                            ${q.options.map((opt) => `
+                                <button onclick="router.answerFriendQuestion('${q.id}', '${opt.replace(/'/g, "\\'")}')" 
+                                        class="w-full p-4 rounded-2xl text-left border-2 transition-all font-extrabold flex items-center justify-between group
+                                        ${currentAnswer === opt 
+                                            ? 'border-indigo-500 bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 shadow-md scale-[1.01]' 
+                                            : 'border-slate-200/80 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 bg-white/40 dark:bg-slate-800/40 text-slate-800 dark:text-slate-200'}">
+                                    <span class="text-sm sm:text-base">${opt}</span>
+                                    <i class="${currentAnswer === opt ? 'fa-solid fa-circle-check text-indigo-500 text-lg' : 'fa-regular fa-circle text-slate-300 dark:text-slate-600 group-hover:text-slate-400'}"></i>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center pt-4 border-t border-slate-200/40 dark:border-slate-800/60">
+                        <button onclick="router.prevFriendQuestion()" 
+                                class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-20 transition"
+                                ${state.currentIndex === 0 ? 'disabled' : ''}>
+                            <i class="fa-solid fa-arrow-left mr-1"></i> Back
+                        </button>
+
+                        ${state.currentIndex === 9 ? `
+                            <button onclick="router.submitFriendQuiz()" 
+                                    class="gradient-btn text-white font-extrabold py-3.5 px-6 rounded-2xl shadow-xl flex items-center gap-2 ${!currentAnswer ? 'opacity-50 cursor-not-allowed' : ''}">
+                                Submit Answers <i class="fa-solid fa-check"></i>
+                            </button>
+                        ` : `
+                            <button onclick="router.nextFriendQuestion()" 
+                                    class="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-white font-extrabold py-3.5 px-6 rounded-2xl shadow transition flex items-center gap-2 ${!currentAnswer ? 'opacity-50 cursor-not-allowed' : ''}">
+                                Next <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        answerFriendQuestion(qId, answer) {
+            playSound('select');
+            this.friendState.answers[qId] = answer;
+            this.renderFriendFlow();
+        }
+
+        nextFriendQuestion() {
+            const q = this.friendState.quiz.questions[this.friendState.currentIndex];
+            if (!this.friendState.answers[q.id]) {
+                showToast("Please make a prediction for this question!", "fa-solid fa-hand text-amber-400");
+                return;
+            }
+            if (this.friendState.currentIndex < 9) {
+                this.friendState.currentIndex++;
+                this.renderFriendFlow();
+            }
+        }
+
+        prevFriendQuestion() {
+            if (this.friendState.currentIndex > 0) {
+                this.friendState.currentIndex--;
+                this.renderFriendFlow();
+            }
+        }
+
+        submitFriendQuiz() {
+            const state = this.friendState;
+            for (let q of state.quiz.questions) {
+                if (!state.answers[q.id]) {
+                    showToast("Please answer all questions!", "fa-solid fa-triangle-exclamation text-amber-400");
+                    return;
+                }
+            }
+
+            let score = 0;
+            const answerBreakdown = [];
+            state.quiz.questions.forEach(q => {
+                const creatorAns = state.quiz.answers[q.id];
+                const friendAns = state.answers[q.id];
+                const isCorrect = creatorAns === friendAns;
+                if (isCorrect) score++;
+
+                answerBreakdown.push({
+                    questionId: q.id,
+                    questionText: q.question,
+                    creatorAns,
+                    friendAns,
+                    isCorrect
+                });
+            });
+
+            const responseObj = {
+                id: generateId(),
+                friendName: state.friendName,
+                predictedScore: state.predictedScore,
+                actualScore: score,
+                submittedAt: new Date().toISOString(),
+                breakdown: answerBreakdown
+            };
+
+            Storage.saveResponse(state.quiz.id, responseObj);
+            
+            window.lastFriendResult = { quiz: state.quiz, response: responseObj };
+
+            triggerConfetti();
+            playSound('celebrate');
+            this.navigate(`friend-result/${state.quiz.id}`);
+        }
+
+        renderFriendResults(quizId) {
+            let resultData = window.lastFriendResult;
+            
+            if (!resultData || resultData.quiz.id !== quizId) {
+                const quiz = Storage.getQuiz(quizId);
+                if (quiz && quiz.responses && quiz.responses.length > 0) {
+                    resultData = { quiz, response: quiz.responses[quiz.responses.length - 1] };
+                } else {
+                    this.navigate('');
+                    return;
+                }
+            }
+
+            const { quiz, response } = resultData;
+            const score = response.actualScore;
+            const diff = score - response.predictedScore;
+
+            let emoji = "🎉";
+            let tagline = "Impressive friendship skills!";
+            if (score === 10) { emoji = "👑"; tagline = "PERFECT 10/10! You are telepathic best friends!"; }
+            else if (score >= 7) { emoji = "🔥"; tagline = "You know them super well!"; }
+            else if (score >= 4) { emoji = "😅"; tagline = "Not bad, but room to improve!"; }
+            else { emoji = "💀"; tagline = "Ouch! Time to hang out more often!"; }
+
+            this.viewport.innerHTML = `
+                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
+                    <div class="text-center space-y-3 bg-indigo-500/10 p-6 rounded-2xl border border-indigo-500/20">
+                        <div class="text-5xl animate-bounce">${emoji}</div>
+                        <h2 class="text-3xl font-black text-slate-900 dark:text-white">${response.friendName}, You Got <span class="text-indigo-500">${score}/10</span>!</h2>
+                        <p class="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300">${tagline}</p>
+
+                        <div class="flex justify-center gap-3 text-xs pt-2">
+                            <span class="bg-white/80 dark:bg-slate-800/80 py-1.5 px-3 rounded-xl shadow-sm border border-slate-200/50 dark:border-slate-700/50 font-extrabold text-slate-600 dark:text-slate-300">
+                                Predicted: <span class="text-indigo-500">${response.predictedScore}/10</span>
+                            </span>
+                            <span class="bg-white/80 dark:bg-slate-800/80 py-1.5 px-3 rounded-xl shadow-sm border border-slate-200/50 dark:border-slate-700/50 font-extrabold text-slate-600 dark:text-slate-300">
+                                Diff: <span class="${diff >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${diff > 0 ? '+' + diff : diff}</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button onclick="router.startQuizCreation()" class="gradient-btn text-white font-extrabold py-3.5 px-4 rounded-2xl shadow-lg text-sm flex-1 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Create My Own Quiz
+                        </button>
+                        <button onclick="router.navigate('results/${quiz.id}')" class="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-extrabold py-3.5 px-4 rounded-2xl shadow-lg text-sm flex-1 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-trophy text-amber-400"></i> View Leaderboard
+                        </button>
+                    </div>
+
+                    <div class="space-y-3 pt-2">
+                        <h3 class="font-black text-slate-800 dark:text-slate-100 text-base flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-indigo-500"></i> Detailed Answer Breakdown
+                        </h3>
+
+                        <div class="space-y-3">
+                            ${response.breakdown.map((item, idx) => `
+                                <div class="p-4 rounded-2xl border ${item.isCorrect ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-rose-500/30 bg-rose-500/5'} space-y-2">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <div class="text-[10px] font-black text-slate-400 uppercase tracking-wider">QUESTION ${idx + 1}</div>
+                                        <span class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full ${item.isCorrect ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300' : 'bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300'}">
+                                            ${item.isCorrect ? 'Correct' : 'Wrong'}
+                                        </span>
+                                    </div>
+                                    <div class="font-extrabold text-sm text-slate-800 dark:text-slate-100">${item.questionText}</div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
+                                        <div class="p-2.5 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/40 dark:border-slate-700/40">
+                                            <span class="text-slate-400 font-bold block text-[10px]">Your Answer:</span>
+                                            <span class="font-black ${item.isCorrect ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">${item.friendAns}</span>
+                                        </div>
+                                        <div class="p-2.5 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/40 dark:border-slate-700/40">
+                                            <span class="text-slate-400 font-bold block text-[10px]">${quiz.creatorName}'s Answer:</span>
+                                            <span class="font-black text-slate-800 dark:text-slate-200">${item.creatorAns}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        renderCreatorDashboard(quizId) {
+            const quiz = Storage.getQuiz(quizId);
+            if (!quiz) {
+                this.render404();
+                return;
+            }
+
+            const responses = quiz.responses || [];
+            const sortedResponses = [...responses].sort((a, b) => b.actualScore - a.actualScore);
+
+            this.viewport.innerHTML = `
+                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200/40 dark:border-slate-800/60 pb-4">
+                        <div>
+                            <div class="text-[10px] font-black text-indigo-500 uppercase tracking-widest">CREATOR DASHBOARD</div>
+                            <h2 class="text-2xl font-black text-slate-900 dark:text-white">${quiz.creatorName}'s Quiz Results</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Category: <span class="capitalize font-extrabold text-slate-700 dark:text-slate-300">${quiz.category}</span></p>
+                        </div>
+                        <button onclick="router.navigate('share/${quiz.id}')" class="bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-extrabold px-3.5 py-2.5 rounded-xl transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-share-nodes"></i> Share Link
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <div class="p-4 bg-slate-500/5 rounded-2xl border border-slate-200/40 dark:border-slate-800/60 text-center">
+                            <div class="text-3xl font-black text-indigo-500">${responses.length}</div>
+                            <div class="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider mt-0.5">Total Responses</div>
+                        </div>
+                        <div class="p-4 bg-slate-500/5 rounded-2xl border border-slate-200/40 dark:border-slate-800/60 text-center">
+                            <div class="text-3xl font-black text-purple-500">
+                                ${responses.length ? (responses.reduce((acc, r) => acc + r.actualScore, 0) / responses.length).toFixed(1) : '0'}/10
+                            </div>
+                            <div class="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider mt-0.5">Average Score</div>
+                        </div>
+                        <div class="p-4 bg-slate-500/5 rounded-2xl border border-slate-200/40 dark:border-slate-800/60 text-center col-span-2 sm:col-span-1">
+                            <div class="text-3xl font-black text-emerald-500">
+                                ${responses.length ? Math.max(...responses.map(r => r.actualScore)) : 0}/10
+                            </div>
+                            <div class="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider mt-0.5">Top Score</div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <h3 class="font-black text-slate-800 dark:text-slate-100 text-base flex items-center justify-between">
+                            <span>🏆 Leaderboard</span>
+                            <span class="text-[10px] text-slate-400 font-bold">Click a friend for breakdown</span>
+                        </h3>
+
+                        ${sortedResponses.length === 0 ? `
+                            <div class="text-center py-10 bg-slate-500/5 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 space-y-3">
+                                <div class="text-4xl animate-bounce">⏳</div>
+                                <div class="font-bold text-slate-700 dark:text-slate-300">No responses yet!</div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto">Share your quiz link with friends to see who knows you best.</p>
+                                <button onclick="router.navigate('share/${quiz.id}')" class="gradient-btn text-white text-xs font-extrabold py-2.5 px-4 rounded-xl shadow inline-flex items-center gap-2">
+                                    <i class="fa-solid fa-copy"></i> Copy Quiz Link
+                                </button>
+                            </div>
+                        ` : `
+                            <div class="space-y-2">
+                                ${sortedResponses.map((res, idx) => {
+                                    let badge = `<span class="w-6 text-center font-bold text-slate-400 text-xs">#${idx + 1}</span>`;
+                                    if (idx === 0) badge = `<span class="text-2xl">🥇</span>`;
+                                    else if (idx === 1) badge = `<span class="text-2xl">🥈</span>`;
+                                    else if (idx === 2) badge = `<span class="text-2xl">🥉</span>`;
+
+                                    return `
+                                        <button onclick="router.showFriendDetail('${quiz.id}', '${res.id}')" 
+                                                class="w-full p-4 rounded-2xl bg-white/40 dark:bg-slate-800/40 hover:bg-indigo-500/10 border border-slate-200/50 dark:border-slate-700/50 transition flex items-center justify-between group shadow-sm">
+                                            <div class="flex items-center gap-3">
+                                                ${badge}
+                                                <div class="text-left">
+                                                    <div class="font-extrabold text-slate-800 dark:text-slate-100 group-hover:text-indigo-500 transition">${res.friendName}</div>
+                                                    <div class="text-xs text-slate-400">Predicted: ${res.predictedScore}/10</div>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-3">
+                                                <div class="text-right">
+                                                    <div class="font-black text-lg text-indigo-500">${res.actualScore}/10</div>
+                                                    <div class="text-[10px] text-slate-400">${new Date(res.submittedAt).toLocaleDateString()}</div>
+                                                </div>
+                                                <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-600 group-hover:text-indigo-500 text-xs transition"></i>
+                                            </div>
+                                        </button>
+                                    `;
+                                }).join('')}
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        showFriendDetail(quizId, responseId) {
+            const quiz = Storage.getQuiz(quizId);
+            if (!quiz) return;
+            const res = (quiz.responses || []).find(r => r.id === responseId);
+            if (!res) return;
+
+            const contentHtml = `
+                <div class="space-y-3">
+                    <div class="bg-indigo-500/10 p-4 rounded-2xl border border-indigo-500/20 flex justify-between items-center text-xs">
+                        <div>
+                            <span class="text-slate-500 dark:text-slate-400 font-bold">Predicted:</span>
+                            <span class="font-black text-indigo-500 ml-1">${res.predictedScore}/10</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-500 dark:text-slate-400 font-bold">Actual Score:</span>
+                            <span class="font-black text-indigo-500 ml-1">${res.actualScore}/10</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 pt-1">
+                        ${res.breakdown.map((b, idx) => `
+                            <div class="p-3 rounded-2xl border text-xs ${b.isCorrect ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-rose-500/30 bg-rose-500/5'} space-y-1">
+                                <div class="font-bold text-slate-800 dark:text-slate-200">${idx + 1}. ${b.questionText}</div>
+                                <div class="flex justify-between pt-1">
+                                    <span class="${b.isCorrect ? 'text-emerald-600 dark:text-emerald-400 font-black' : 'text-rose-600 dark:text-rose-400 font-black'}">
+                                        ${res.friendName}: "${b.friendAns}"
+                                    </span>
+                                    <span class="text-slate-400 font-semibold">
+                                        ${quiz.creatorName}: "${b.creatorAns}"
+                                    </span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            playSound('select');
+            openModal(
+                `${res.friendName}'s Answers`, 
+                `Score: ${res.actualScore}/10 (Predicted: ${res.predictedScore}/10)`, 
+                contentHtml
+            );
+        }
+
+        render404() {
+            this.viewport.innerHTML = `
+                <div class="glass-card rounded-3xl p-8 text-center space-y-4">
+                    <div class="text-5xl">🔍</div>
+                    <h2 class="text-2xl font-black text-slate-800 dark:text-white">Quiz Not Found</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">The quiz link or code might be invalid or expired from local storage.</p>
+                    <button onclick="router.navigate('')" class="gradient-btn text-white font-extrabold py-3 px-6 rounded-2xl text-sm shadow-lg">
+                        Back to Home
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    let router;
+    window.addEventListener('DOMContentLoaded', () => {
+        router = new AppRouter();
+    });
+    </script>
+</body>
+</html>
